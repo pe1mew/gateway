@@ -1168,7 +1168,8 @@ void TCPIP_HTTP_Print_scanresult(HTTP_CONN_HANDLE connHandle)
 }
 
 char* settingsbuffer;
-
+// This information is found at: " http://192.168.20.186" 
+// Defined in "/firmware/src/http_print.c" 
 void TCPIP_HTTP_Print_gwsettings(HTTP_CONN_HANDLE connHandle)
 {
     s_httpapp_get_param.config.data = &g_wifi_cfg;
@@ -1221,6 +1222,7 @@ void TCPIP_HTTP_Print_gwsettings(HTTP_CONN_HANDLE connHandle)
     TCPIP_HTTP_CurrentConnectionCallbackPosSet(connHandle, callbackPos);
 }
 
+// This information is found in " http://192.168.20.186/info" 
 void TCPIP_HTTP_Print_gwstatus(HTTP_CONN_HANDLE connHandle)
 {
     s_httpapp_get_param.config.data = &g_wifi_cfg;

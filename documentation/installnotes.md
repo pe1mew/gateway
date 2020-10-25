@@ -27,3 +27,11 @@ chmod u+x xc8-v*-full-install-linux-installer.run
 sudo ./xc8-v*-full-install-linux-installer.run
 ```
 And now MPLAB X IDE is installed.
+
+#Run MPLAB
+
+Terminal
+```
+mplab_ide &
+```
+
