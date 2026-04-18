@@ -77,7 +77,8 @@ typedef enum
 {
     EVENT_NONE,
     EVENT_SWITCH_TO_AP_MODE,
-    EVENT_SWITCH_TO_INFRA_MODE
+    EVENT_SWITCH_TO_INFRA_MODE,
+    EVENT_DISABLE_WIFI
 } EVENT_t;
 
 typedef enum
@@ -421,6 +422,22 @@ void APP_WIFI_Tasks(void)
             }
             break;
 
+        case EVENT_DISABLE_WIFI:
+            switch(_state)
+            {
+                case STATE_WAIT_CONFIG:
+                case STATE_TRANSACT:
+                    APP_WIFI_IFModules_Disable();
+                    APP_WIFI_IF_Down();
+                    _changeState(STATE_WAIT_CONFIG);
+                    _activeConfig = CNFG_NONE;
+                    _event        = EVENT_NONE;
+                    break;
+                default:
+                    break;
+            }
+            break;
+
         case EVENT_NONE:
             break;
     }
@@ -673,6 +690,11 @@ void APP_WIFI_AP_MODE(void)
 void APP_WIFI_INFRA_MODE(void)
 {
     _event = EVENT_SWITCH_TO_INFRA_MODE;
+}
+
+void APP_WIFI_DISABLE(void)
+{
+    _event = EVENT_DISABLE_WIFI;
 }
 
 bool APP_WIFI_Has_LinkAP(void)

@@ -601,6 +601,7 @@ extern "C"
     uint8_t APP_MQTT_GET_STATE();
     bool    APP_WIFI_Has_LinkAP(void);
     bool    APP_WIFI_Has_LinkINFRA(void);
+    void    APP_WIFI_DISABLE(void);
     bool    APP_ETH_Has_Link(void);
 
     bool selftest_isEnabled(void);
