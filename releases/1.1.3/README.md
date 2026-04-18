@@ -3,7 +3,7 @@
 | Field       | Value                        |
 |-------------|------------------------------|
 | Version     | 1.1.3                        |
-| Name        | RemkoWelling                 |
+| Name        | Remko Welling                |
 | Type        | 0 (production)               |
 | Built       | 2026-04-18                   |
 | Commit      | f9cea314                     |
