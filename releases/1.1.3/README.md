@@ -47,6 +47,11 @@ restored when a WiFi connection attempt failed.
   window and the AP retry interval, replacing the unused 120 s
   `WIFI_RETRY_TIMEOUT`.
 
+**Note:** If the AP is still on, configuration information may still be in
+non-volatile memory. To erase WiFi client settings, press the button in the
+gateway for 2 seconds until the second LED lights, then release. The AP will
+now not be active.
+
 **Files changed:**
 - `firmware/src/app_wifi.h` — added `APP_WIFI_DISABLE()` declaration
 - `firmware/src/app_wifi.c` — added `EVENT_DISABLE_WIFI`, handler, and `APP_WIFI_DISABLE()`
