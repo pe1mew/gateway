@@ -5,6 +5,7 @@
 #include "app.h"
 #include "app_http_request.h"
 #include "subsystem_controller.h"
+#include "system_config/TTN_Gateway_v1/framework/net/pres/net_pres_enc_glue.h"
 
 static int8_t _pumpDNS(const char* hostname, IPV4_ADDR* ipv4Addr);
 
@@ -191,6 +192,7 @@ void APP_HTTP_Request_Tasks(void)
                        "setting TX buffer to 16k");
 
                 SYS_DEBUG(SYS_ERROR_INFO, "HTTPS: Connection Opened: Starting TLS Negotiation\r\n");
+                NET_PRES_EncGlue_SetSNIHostname(request.host);
                 if(!NET_PRES_SocketEncryptSocket(appHTTPRequestData.socket))
                 {
                     SYS_DEBUG(SYS_ERROR_INFO, "HTTP: TLS Create Connection Failed - Aborting\r\n");

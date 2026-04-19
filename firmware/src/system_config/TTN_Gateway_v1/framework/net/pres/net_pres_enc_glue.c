@@ -155,6 +155,14 @@ int NET_PRES_EncGlue_StreamClientSendCb0(void *ctx, const unsigned char *buf, si
 
 uint32_t ssl_init_flag = 0;
 
+static char _sni_hostname[256] = {0};
+
+void NET_PRES_EncGlue_SetSNIHostname(const char * hostname)
+{
+    strncpy(_sni_hostname, hostname, sizeof(_sni_hostname) - 1);
+    _sni_hostname[sizeof(_sni_hostname) - 1] = '\0';
+}
+
 bool NET_PRES_EncProviderStreamClientInit0(NET_PRES_TransportObject * transObject)
 {
     int ret = 0;
@@ -281,6 +289,11 @@ NET_PRES_EncSessionStatus NET_PRES_EncProviderClientConnect0(void * providerData
     mbedtls_ssl_set_bio(&mbed_ctx.ssl, &mbed_ctx.server_fd,
             NET_PRES_EncGlue_StreamClientSendCb0,
             NET_PRES_EncGlue_StreamClientReceiveCb0, NULL);
+
+    if (_sni_hostname[0] != '\0') {
+        mbedtls_ssl_set_hostname(&mbed_ctx.ssl, _sni_hostname);
+        _sni_hostname[0] = '\0';
+    }
 
     NPEG_DEBUG_PRINT("  . Performing the SSL/TLS handshake...");
     while ((ret = mbedtls_ssl_handshake(&mbed_ctx.ssl)) != 0) {

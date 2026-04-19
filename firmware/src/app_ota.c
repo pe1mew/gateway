@@ -97,7 +97,7 @@ void APP_OTA_Tasks(void)
         case APP_OTA_CONNECTING:
         {
             strcpy(APP_URL_Buffer, appGWActivationData.configuration.firmware_url);
-            SYS_DEBUG(SYS_ERROR_DEBUG, "FIRM: APP_URL_Buffer: %s\r\n", APP_URL_Buffer);
+            SYS_PRINT("FIRM: firmware_url: %s\r\n", APP_URL_Buffer);
 
             if(APP_URL_Buffer[0] != '\0')
             {
@@ -111,6 +111,7 @@ void APP_OTA_Tasks(void)
                 }
                 else
                 {
+                    SYS_PRINT("FIRM: host: %s port: %u tls: %d\r\n", request.host, request.port, request.tls);
                     if(appOTAData.file_type == KEY)
                     {
                         appOTAData.state = APP_OTA_REQUEST_KEY;
