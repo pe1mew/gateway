@@ -15,3 +15,4 @@ firmware/compile_log.txt
 firmware/firmware.hex
 firmware/checksums
 firmware/cppcheck.xml
+firmware/log.0
