@@ -34,11 +34,12 @@ uint8_t hasLoraPacketInQueue();
 void    APP_LORA_SetStartEvent(void);
 
 bool dequeueLoRaRX(loraRXPacket* pkt);
-
 void enqueueLoRaRX(loraRXPacket* pkt);
 
-bool dequeueLoRaTX(loraTXPacket* pkt);
+bool    dequeueUDPRX(loraRXPacket* pkt);
+uint8_t hasUDPRXPacketInQueue(void);
 
+bool dequeueLoRaTX(loraTXPacket* pkt);
 void enqueueLoRaTX(loraTXPacket* pkt);
 
 uint8_t hasLoraRXPacketInQueue(void);

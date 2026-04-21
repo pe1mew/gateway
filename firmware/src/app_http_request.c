@@ -379,7 +379,7 @@ int32_t APP_HTTP_ParseUrl(char* uri, char** host, char** path, uint16_t* port, b
         pos = strchr(*host, '/');
         if(!pos)
         {
-            *path = NULL;
+            *path = *host + strlen(*host); /* empty string at end of buffer */
         }
         else
         {
@@ -395,7 +395,7 @@ int32_t APP_HTTP_ParseUrl(char* uri, char** host, char** path, uint16_t* port, b
         pos = strchr(portc, '/');
         if(!pos)
         {
-            *path = NULL;
+            *path = portc + strlen(portc); /* empty string at end of buffer */
         }
         else
         {

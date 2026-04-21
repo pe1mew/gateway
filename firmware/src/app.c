@@ -12,6 +12,7 @@
 #include "app_ota.h"
 #include "helper_wdt.h"
 #include "app_mqtt.h"
+#include "app_udp.h"
 #include "ssm_button.h"
 #include "error_messages.h"
 
@@ -30,6 +31,7 @@ typedef enum
     APP_STATE_OPERATIONAL,
     APP_STATE_WAIT_FOR_INTERNET_WHILE_OPERATIONAL,
     APP_STATE_STORE_USER_CONFIG,
+    APP_STATE_STORE_UDP_CONFIG,
     APP_STATE_ERASE_ACTI_CONFIG,
     APP_STATE_ERASE_WIFI_CONFIG,
     APP_STATE_REBOOT,
@@ -100,16 +102,19 @@ static ConnState_t rememberedNetworkState = {0};
 static uint32_t    ledBinkStartTick       = 0;
 static uint32_t    buttonReleaseStartTick = 0;
 
-APP_GW_ACTIVATION_DATA appGWActivationData = {0};
-APP_GW_WIFI_DATA       appWifiData         = {0};
+APP_GW_ACTIVATION_DATA appGWActivationData  = {0};
+APP_GW_WIFI_DATA       appWifiData          = {0};
+UDP_GW_CONF            g_udp_gw_conf        = {0};
+FOTA_OVERRIDE_CONF     g_fota_override_conf = {0};
 
 bool button_was_pressed = false;
 
 static SYS_TMR_HANDLE delayHandle;
 
 WF_CONFIG_DATA g_wifi_cfg;
-bool           g_config_changed  = false;
-bool           g_redirect_signal = false;
+bool           g_config_changed   = false;
+bool           g_udp_conf_changed = false;
+bool           g_redirect_signal  = false;
 
 void APP_Initialize(void)
 {
@@ -159,6 +164,7 @@ void APP_Initialize(void)
 
     APP_BLE_Initialize();
     APP_MQTT_Initialize();
+    APP_UDP_Initialize();
 
     /* Place the App state machine in its initial state. */
     _state = APP_STATE_MOUNT_FS;
@@ -265,6 +271,9 @@ static void _changeState(STATE_t newState)
             _statSet(LED_ACTIVITY, OFF);
             break;
 
+        case APP_STATE_STORE_UDP_CONFIG:
+            break;
+
         case APP_STATE_ERASE_ACTI_CONFIG:
             APP_SERIALFLASH_EraseActivationData();
             ledBinkStartTick = SYS_TMR_TickCountGet();
@@ -347,6 +356,11 @@ void APP_Tasks(void)
         {
             _changeState(APP_STATE_STORE_USER_CONFIG);
             g_config_changed = false;
+        }
+        if(g_udp_conf_changed)
+        {
+            _changeState(APP_STATE_STORE_UDP_CONFIG);
+            g_udp_conf_changed = false;
         }
         if(SSMButton_IsPressed())
         {
@@ -697,6 +711,7 @@ void APP_Tasks(void)
             APP_ETH_Tasks();
             APP_WIFI_Tasks();
             APP_MQTT_Tasks();
+            APP_UDP_Tasks();
             break;
         case APP_STATE_WAIT_FOR_INTERNET_WHILE_OPERATIONAL:
             APP_ETH_Tasks();
@@ -709,6 +724,29 @@ void APP_Tasks(void)
             SSMStoreUserConfig_Tasks();
             APP_SERIALFLASH_Tasks();
             break;
+        case APP_STATE_STORE_UDP_CONFIG:
+        {
+            static int udp_save_sub = 0;
+            APP_ETH_Tasks();
+            APP_WIFI_Tasks();
+            APP_SERIALFLASH_Tasks();
+            if(udp_save_sub == 0 && APP_SERIALFLASH_IsReady())
+            {
+                APP_SERIALFLASH_EraseUDPConfig();
+                udp_save_sub = 1;
+            }
+            else if(udp_save_sub == 1 && APP_SERIALFLASH_IsReady())
+            {
+                APP_SERIALFLASH_SaveUDPConfig(&g_udp_gw_conf);
+                udp_save_sub = 2;
+            }
+            else if(udp_save_sub == 2 && APP_SERIALFLASH_IsReady())
+            {
+                udp_save_sub = 0;
+                _changeState(APP_STATE_OPERATIONAL);
+            }
+            break;
+        }
         case APP_STATE_ERASE_ACTI_CONFIG:
         case APP_STATE_ERASE_WIFI_CONFIG:
             APP_SERIALFLASH_Tasks();

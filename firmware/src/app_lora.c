@@ -58,7 +58,7 @@ static uint32_t lora_config_failed_counter = 0;
 static bool     freqplan_correct           = 0;
 static version_t module_version_info       = {0};
 
-QueueHandle_t xRXQueue, xTXQueue;
+QueueHandle_t xRXQueue, xTXQueue, xUDPRXQueue;
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -631,6 +631,16 @@ void enqueueLoRaRX(loraRXPacket* pkt)
     xQueueSend(xRXQueue, pkt, 0U);
 }
 
+bool dequeueUDPRX(loraRXPacket* pkt)
+{
+    return xQueueReceive(xUDPRXQueue, pkt, 0) == pdTRUE ? true : false;
+}
+
+uint8_t hasUDPRXPacketInQueue(void)
+{
+    return uxQueueMessagesWaiting(xUDPRXQueue);
+}
+
 bool dequeueLoRaTX(loraTXPacket* pkt)
 {
     return xQueueReceive(xTXQueue, pkt, 0) == pdTRUE ? true : false;
@@ -651,8 +661,9 @@ void APP_LORA_Initialize(void)
     /* Place the App state machine in its initial state. */
     _setState(APP_LORA_INIT);
 
-    xRXQueue = xQueueCreate(5, sizeof(loraRXPacket));
-    xTXQueue = xQueueCreate(5, sizeof(loraTXPacket));
+    xRXQueue    = xQueueCreate(5, sizeof(loraRXPacket));
+    xTXQueue    = xQueueCreate(5, sizeof(loraTXPacket));
+    xUDPRXQueue = xQueueCreate(5, sizeof(loraRXPacket));
 }
 
 void APP_LORA_SetStartEvent(void)
@@ -881,7 +892,8 @@ static void receive_callback(uint8_t *data, size_t size)
     {
         if(rxpkt.pkt_status == 0x10 || rxpkt.pkt_status == 0x01)
         {
-            enqueueLoRaRX(&rxpkt); // package is copied in the queue
+            enqueueLoRaRX(&rxpkt);
+            xQueueSend(xUDPRXQueue, &rxpkt, 0U);
             sendRXReply(true);
             GATEWAY_MODULE_INTERFACE_LOG("LORA: Accepted packet\r\n");
             // printRXPacket(&rxpkt);

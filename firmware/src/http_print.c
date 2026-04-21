@@ -53,6 +53,7 @@ void TCPIP_HTTP_Print_scanresult(HTTP_CONN_HANDLE connHandle);
 void TCPIP_HTTP_Print_scan(HTTP_CONN_HANDLE connHandle);
 void TCPIP_HTTP_Print_gwsettings(HTTP_CONN_HANDLE connHandle);
 void TCPIP_HTTP_Print_gwstatus(HTTP_CONN_HANDLE connHandle);
+void TCPIP_HTTP_Print_gwudp(HTTP_CONN_HANDLE connHandle);
 
 void TCPIP_HTTP_Print(HTTP_CONN_HANDLE connHandle, uint32_t callbackID)
 {
@@ -85,6 +86,9 @@ void TCPIP_HTTP_Print(HTTP_CONN_HANDLE connHandle, uint32_t callbackID)
             break;
         case 0x00000008:
             TCPIP_HTTP_Print_gwstatus(connHandle);
+            break;
+        case 0x00000009:
+            TCPIP_HTTP_Print_gwudp(connHandle);
             break;
         default:
             // Output notification for undefined values

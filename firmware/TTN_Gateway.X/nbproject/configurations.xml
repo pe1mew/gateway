@@ -693,6 +693,7 @@
         <itemPath>../src/subsystem_controller.c</itemPath>
         <itemPath>../vendor/json-builder/json-builder.c</itemPath>
         <itemPath>../src/app_mqtt.c</itemPath>
+        <itemPath>../src/app_udp.c</itemPath>
         <itemPath>../vendor/jsmn/jsmn.c</itemPath>
         <itemPath>../src/app_http_ttn.c</itemPath>
         <itemPath>../src/app_activation.c</itemPath>
