@@ -818,6 +818,7 @@ void APP_UDP_Tasks(void)
                 {
                     TCPIP_UDP_ArrayPut(s_sock, txbuf, len);
                     TCPIP_UDP_Flush(s_sock);
+                    s_push_sent++;
                     SYS_PRINT("UDP: stat sent (rxnb=%lu rxok=%lu rxfw=%lu ackr=%.0f%%)\r\n",
                               (unsigned long)s_rxnb, (unsigned long)s_rxok, (unsigned long)s_rxfw,
                               s_push_sent > 0 ? (double)s_push_acked * 100.0 / s_push_sent : 100.0);
